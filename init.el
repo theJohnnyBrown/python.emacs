@@ -8,7 +8,7 @@
 (require 'cl)
 
 (defvar my-packages
-  '(clojure-mode coffee-mode expand-region pbcopy
+  '(clojure-mode coffee-mode expand-region pbcopy ein
 		 magit markdown-mode paredit python
 		 rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep))
 
@@ -61,11 +61,12 @@
 
 ;; MuMaMo
 (custom-set-faces
-   '(mumamo-background-chunk-major
-     ((((class color) (min-colors 88) (background dark)) nil)))
-   ;; '(mumamo-background-chunk-submode1
-   ;;   ((((class color) (min-colors 88) (background dark)) nil)))
-   )
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(font-lock-string-face ((t (:foreground "#ad7fa8" :slant normal))))
+ '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil))))
 
 ;;; Workaround
 
@@ -78,13 +79,18 @@
     '(add-to-list 'byte-compile-not-obsolete-vars
                   'font-lock-syntactic-keywords)))
 ;; See: http://stackoverflow.com/a/5470584/727827
-(setq ein:notebook-modes '(ein:notebook-mumamo-mode ein:notebook-plain-mode))
+(setq ein:notebook-modes
+      '(ein:notebook-mumamo-mode ein:notebook-plain-mode))
 
 ;;; end zeroein.el
 
 ;; personal idiosyncracies
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(global-linum-mode t)
  '(show-paren-mode t))
@@ -125,10 +131,17 @@
 	    (local-set-key (kbd "C-c d")
 			   (lambda () (interactive)
 			     (insert "import ipdb; ipdb.set_trace()")))))
+
 (add-hook 'js-mode-hook
 	  (lambda ()
 	    (local-set-key (kbd "C-c d") (lambda () (interactive)
 					   (insert "debugger;")))))
 
-
 (electric-pair-mode +1)
+
+(when (window-system)
+  (set-face-attribute 'default nil :family "Monaco" :height 120 :weight 'normal)
+  (set-frame-parameter nil 'fullscreen 'fullboth)
+  (setq mac-command-modifier 'meta))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
