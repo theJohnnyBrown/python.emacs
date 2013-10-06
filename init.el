@@ -1,6 +1,9 @@
 ;; vendored code outside of package archives
 (load "~/.emacs.d/nxhtml/autostart.el")
 
+;; built-in packages
+(require 'uniquify)
+
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")))
 (require 'cl)
 
@@ -76,3 +79,56 @@
                   'font-lock-syntactic-keywords)))
 ;; See: http://stackoverflow.com/a/5470584/727827
 (setq ein:notebook-modes '(ein:notebook-mumamo-mode ein:notebook-plain-mode))
+
+;;; end zeroein.el
+
+;; personal idiosyncracies
+
+(custom-set-variables
+ '(column-number-mode t)
+ '(global-linum-mode t)
+ '(show-paren-mode t))
+
+;; Changes all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+;; Scroll down with the cursor,move down the buffer one
+;; line at a time, instead of in larger amounts.
+(setq scroll-step 1)
+;; do not make backup files
+(setq make-backup-files nil)
+
+(setq uniquify-buffer-name-style 'post-forward)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Surround word or region with html tags
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun tag-word-or-region (&optional start-reg end-reg tag)
+    "Surround current word or region with a given tag."
+    (interactive "r\nsEnter tag (without <>): ")
+    (let (pos1 pos2 bds start-tag end-tag)
+        (setq start-tag (concat "<" tag ">"))
+        (setq end-tag (concat "</" (car (split-string tag " ")) ">"))
+            (progn
+                (goto-char end-reg)
+                (insert end-tag)
+                (goto-char start-reg)
+                (insert start-tag))))
+
+(global-set-key "\C-xt" 'tag-word-or-region)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DEBUG STATEMENTS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "C-c d")
+			   (lambda () (interactive)
+			     (insert "import ipdb; ipdb.set_trace()")))))
+(add-hook 'js-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "C-c d") (lambda () (interactive)
+					   (insert "debugger;")))))
+
+
+(electric-pair-mode +1)
