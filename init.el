@@ -8,18 +8,18 @@
 (require 'cl)
 
 (defvar my-packages
-  '(clojure-mode coffee-mode expand-region pbcopy ein
+  '(clojure-mode coffee-mode expand-region pbcopy ein xclip
 		 magit markdown-mode paredit python
 		 rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep))
 
 
 (when (>= emacs-major-version 24)
-(require 'package)
-(add-to-list 'package-archives
-    '("melpa" . "http://melpa.milkbox.net/packages/") t))
-(add-to-list 'package-archives 
-    '("marmalade" . "http://marmalade-repo.org/packages/"))
-(package-initialize)
+  (require 'package)
+  (add-to-list 'package-archives
+	       '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  (add-to-list 'package-archives 
+	       '("marmalade" . "http://marmalade-repo.org/packages/"))
+  (package-initialize))
 
 (defun my-packages-installed-p ()
   (loop for p in my-packages
@@ -37,8 +37,14 @@
 (load-theme 'tangotango t)
 (setq inhibit-splash-screen t)
 
-(require 'pbcopy)
-(turn-on-pbcopy)
+(when (eq window-system 'x)
+  (xclip-mode 1)
+  (setq x-select-enable-clipboard t)
+  (setq x-select-enable-primary t))
+
+(when (eq window-system 'ns)
+  (require 'pbcopy)
+  (turn-on-pbcopy))
 
 ;; copied from zeroein.el
 
@@ -85,7 +91,9 @@
 ;;; end zeroein.el
 
 ;; personal idiosyncracies
-
+(set-default 'truncate-lines t)
+(setq fill-column 80)
+(set-default 'require-final-newline t)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -104,6 +112,7 @@
 (setq make-backup-files nil)
 
 (setq uniquify-buffer-name-style 'post-forward)
+(windmove-default-keybindings)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -140,8 +149,11 @@
 (electric-pair-mode +1)
 
 (when (window-system)
-  (set-face-attribute 'default nil :family "Monaco" :height 120 :weight 'normal)
+  (set-face-attribute 'default nil :family "Monaco" :height 80 :weight 'normal)
   (set-frame-parameter nil 'fullscreen 'fullboth)
   (setq mac-command-modifier 'meta))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+
+(put 'upcase-region 'disabled nil)
