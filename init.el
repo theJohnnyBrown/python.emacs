@@ -7,17 +7,20 @@
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")))
 (require 'cl)
 
+(setenv "PATH" (concat (getenv "PATH") "/usr/local/bin"))
+(setq exec-path (append exec-path '("/usr/local/bin")))
+
 (defvar my-packages
   '(clojure-mode coffee-mode expand-region pbcopy ein xclip
-		 magit markdown-mode paredit python
-		 rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep))
+		 magit markdown-mode paredit python cider
+		 rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors))
 
 
 (when (>= emacs-major-version 24)
   (require 'package)
   (add-to-list 'package-archives
-	       '("melpa" . "http://melpa.milkbox.net/packages/") t)
-  (add-to-list 'package-archives 
+	       '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+  (add-to-list 'package-archives
 	       '("marmalade" . "http://marmalade-repo.org/packages/"))
   (package-initialize))
 
@@ -25,7 +28,7 @@
   (loop for p in my-packages
         when (not (package-installed-p p)) do (return nil)
         finally (return t)))
- 
+
 (unless (my-packages-installed-p)
   ;; check for new packages (package versions)
   (package-refresh-contents)
@@ -91,9 +94,12 @@
 ;;; end zeroein.el
 
 ;; personal idiosyncracies
+(setq-default indent-tabs-mode nil)
+(setq js-indent-level 2)
 (set-default 'truncate-lines t)
 (setq fill-column 80)
 (set-default 'require-final-newline t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -102,6 +108,8 @@
  '(column-number-mode t)
  '(global-linum-mode t)
  '(show-paren-mode t))
+
+(global-set-key "\C-xe" 'mc/edit-lines)
 
 ;; Changes all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -114,6 +122,7 @@
 (setq uniquify-buffer-name-style 'post-forward)
 (windmove-default-keybindings)
 
+(setq ring-bell-function 'ignore)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Surround word or region with html tags
@@ -139,7 +148,7 @@
 	  (lambda ()
 	    (local-set-key (kbd "C-c d")
 			   (lambda () (interactive)
-			     (insert "import ipdb; ipdb.set_trace()")))))
+			     (insert "import ipdb;ipdb.set_trace()")))))
 
 (add-hook 'js-mode-hook
 	  (lambda ()
@@ -157,3 +166,4 @@
 ;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 
 (put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
