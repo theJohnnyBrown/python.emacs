@@ -9,11 +9,12 @@
 
 (setenv "PATH" (concat (getenv "PATH") "/usr/local/bin"))
 (setq exec-path (append exec-path '("/usr/local/bin")))
+(setq exec-path (append exec-path '("~/bin")))
 
 (defvar my-packages
   '(clojure-mode coffee-mode expand-region pbcopy ein xclip
 		 magit markdown-mode paredit python cider
-		 rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors))
+		 rainbow-mode rainbow-delimiters tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors))
 
 
 (when (>= emacs-major-version 24)
@@ -22,6 +23,8 @@
 	       '("melpa-stable" . "https://stable.melpa.org/packages/") t)
   (add-to-list 'package-archives
 	       '("marmalade" . "http://marmalade-repo.org/packages/"))
+  (add-to-list 'package-archives
+	       (cons "melpa"  "http://melpa.org/packages/") t)
   (package-initialize))
 
 (defun my-packages-installed-p ()
