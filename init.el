@@ -8,14 +8,15 @@
 (require 'cl)
 
 (setenv "PATH" (concat (getenv "PATH") "/usr/local/bin"))
-(setq exec-path (append exec-path '("/usr/local/bin")))
-(setq exec-path (append exec-path '("~/bin")))
+(add-to-list 'exec-path "/usr/local/bin")
+(add-to-list 'exec-path (concat (getenv "HOME") "/bin"))
 
 (defvar my-packages
-  '(clojure-mode coffee-mode expand-region pbcopy ein xclip
-		 magit markdown-mode paredit python cider
-		 rainbow-mode rainbow-delimiters tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors))
-
+  '(coffee-mode expand-region pbcopy ein xclip
+    magit markdown-mode paredit python cider csharp-mode go-mode csv-mode
+    rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors
+    ;; clojure stuff: http://fgiasson.com/blog/index.php/2014/05/22/my-optimal-gnu-emacs-settings-for-developing-clojure-so-far/
+    clojure-mode auto-complete ac-cider paredit popup rainbow-delimiters inf-clojure))
 
 (when (>= emacs-major-version 24)
   (require 'package)
@@ -39,6 +40,48 @@
   (dolist (p my-packages)
     (when (not (package-installed-p p))
       (package-install p))))
+
+
+;; =============== clojure config ======================
+(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+
+;; General Auto-Complete
+(require 'auto-complete-config)
+(setq ac-delay 0.0)
+(setq ac-quick-help-delay 0.5)
+(ac-config-default)
+
+(require 'ac-cider)
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(add-hook 'cider-mode-hook 'ac-cider-setup)
+(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+(eval-after-load "auto-complete"
+  '(progn
+     (add-to-list 'ac-modes 'cider-mode)
+     (add-to-list 'ac-modes 'cider-repl-mode)))
+
+(add-hook 'clojure-mode-hook 'paredit-mode)
+
+(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(font-lock-string-face ((t (:foreground "#ad7fa8" :slant normal))))
+ '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil)))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#eeeeec"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#fce94f"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "#8ae234"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "#fcaf3e"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "#ad7fa8"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#729fcf"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "#e9b96e"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "#ef2929")))))
+
+(setq nrepl-popup-stacktraces nil) ;; provisional
+;; =====================================================
+
 
 (load-theme 'tangotango t)
 (setq inhibit-splash-screen t)
@@ -72,13 +115,7 @@
   (global-auto-complete-mode t))
 
 ;; MuMaMo
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(font-lock-string-face ((t (:foreground "#ad7fa8" :slant normal))))
- '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil))))
+
 
 ;;; Workaround
 
@@ -100,7 +137,7 @@
 (setq-default indent-tabs-mode nil)
 (setq js-indent-level 2)
 (set-default 'truncate-lines t)
-(setq fill-column 80)
+(setq-default fill-column 80)
 (set-default 'require-final-newline t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (custom-set-variables
@@ -110,6 +147,16 @@
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(global-linum-mode t)
+ '(package-selected-packages
+   (quote
+    (typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pig-mode pbcopy paredit multiple-cursors markdown-mode magit fuzzy expand-region ein coffee-mode ac-nrepl ac-cider)))
+ '(safe-local-variable-values
+   (quote
+    ((cider-ns-refresh-after-fn . "integrant.repl/resume")
+     (cider-ns-refresh-before-fn . "integrant.repl/suspend")
+     (cider-cljs-lein-repl . "(do (dev) (go) (cljs-repl))")
+     (cider-refresh-after-fn . "reloaded.repl/resume")
+     (cider-refresh-before-fn . "reloaded.repl/suspend"))))
  '(show-paren-mode t))
 
 (global-set-key "\C-xe" 'mc/edit-lines)
@@ -160,13 +207,24 @@
 
 (electric-pair-mode +1)
 
-(when (window-system)
-  (set-face-attribute 'default nil :family "Monaco" :height 80 :weight 'normal)
-  (set-frame-parameter nil 'fullscreen 'fullboth)
+(set-face-attribute 'default nil :family "Monaco" :height 80 :weight 'normal)
+;; (set-face-attribute 'default nil :family "Monaco" :height 120 :weight 'normal)
+(toggle-frame-fullscreen)
+
+(when (string-equal system-type "darwin")
+  ;; (set-frame-parameter nil 'fullscreen 'fullboth)
   (setq mac-command-modifier 'meta))
+
+(when (string-equal system-type "gnu/linux")
+  nil)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+(setq cider-repl-display-in-current-window t)
+(setq inf-clojure-repl-use-same-window t)
