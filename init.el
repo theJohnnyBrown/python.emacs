@@ -1,4 +1,5 @@
 ;; vendored code outside of package archives
+(setq byte-compile-warnings '(not obsolete))
 (load "~/.emacs.d/nxhtml/autostart.el")
 
 ;; built-in packages
@@ -7,16 +8,19 @@
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")))
 (require 'cl)
 
-(setenv "PATH" (concat (getenv "PATH") "/usr/local/bin"))
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path (concat (getenv "HOME") "/bin"))
 
+
 (defvar my-packages
-  '(coffee-mode expand-region pbcopy ein xclip
+  '(expand-region pbcopy ein xclip verb
     magit markdown-mode paredit python cider csharp-mode go-mode csv-mode
     rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors
-    ;; clojure stuff: http://fgiasson.com/blog/index.php/2014/05/22/my-optimal-gnu-emacs-settings-for-developing-clojure-so-far/
-    clojure-mode auto-complete ac-cider paredit popup rainbow-delimiters inf-clojure))
+    ;; clojure stuff:
+    ;; http://fgiasson.com/blog/index.php/2014/05/22/my-optimal-gnu-emacs-settings-for-developing-clojure-so-far/
+    clojure-mode auto-complete ac-cider paredit popup
+    rainbow-delimiters inf-clojure use-package vterm))
 
 (when (>= emacs-major-version 24)
   (require 'package)
@@ -40,6 +44,18 @@
   (dolist (p my-packages)
     (when (not (package-installed-p p))
       (package-install p))))
+
+(use-package vterm
+    :ensure t)
+
+(use-package org
+  :mode ("\\.org\\'" . org-mode)
+  :config (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+
+(add-hook 'org-shiftup-final-hook 'windmove-up)
+(add-hook 'org-shiftleft-final-hook 'windmove-left)
+(add-hook 'org-shiftdown-final-hook 'windmove-down)
+(add-hook 'org-shiftright-final-hook 'windmove-right)
 
 
 ;; =============== clojure config ======================
@@ -148,15 +164,13 @@
  '(column-number-mode t)
  '(global-linum-mode t)
  '(package-selected-packages
-   (quote
-    (typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pig-mode pbcopy paredit multiple-cursors markdown-mode magit fuzzy expand-region ein coffee-mode ac-nrepl ac-cider)))
+   '(hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pig-mode pbcopy paredit multiple-cursors markdown-mode magit fuzzy expand-region ein coffee-mode ac-nrepl ac-cider))
  '(safe-local-variable-values
-   (quote
-    ((cider-ns-refresh-after-fn . "integrant.repl/resume")
+   '((cider-ns-refresh-after-fn . "integrant.repl/resume")
      (cider-ns-refresh-before-fn . "integrant.repl/suspend")
      (cider-cljs-lein-repl . "(do (dev) (go) (cljs-repl))")
      (cider-refresh-after-fn . "reloaded.repl/resume")
-     (cider-refresh-before-fn . "reloaded.repl/suspend"))))
+     (cider-refresh-before-fn . "reloaded.repl/suspend")))
  '(show-paren-mode t))
 
 (global-set-key "\C-xe" 'mc/edit-lines)
@@ -166,8 +180,13 @@
 ;; Scroll down with the cursor,move down the buffer one
 ;; line at a time, instead of in larger amounts.
 (setq scroll-step 1)
-;; do not make backup files
-(setq make-backup-files nil)
+
+;; backup files (doesn't work)
+(setq backup-directory-alist
+      `(("." . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+         ,(expand-file-name "\\2" temporary-file-directory) t)))
 
 (setq uniquify-buffer-name-style 'post-forward)
 (windmove-default-keybindings)
@@ -207,16 +226,16 @@
 
 (electric-pair-mode +1)
 
-(set-face-attribute 'default nil :family "Monaco" :height 80 :weight 'normal)
+(set-face-attribute 'default nil :family "Monaco" :height 100 :weight 'normal)
 ;; (set-face-attribute 'default nil :family "Monaco" :height 120 :weight 'normal)
-(toggle-frame-fullscreen)
+;;
 
 (when (string-equal system-type "darwin")
-  ;; (set-frame-parameter nil 'fullscreen 'fullboth)
+  (set-frame-parameter nil 'fullscreen 'fullboth)
   (setq mac-command-modifier 'meta))
 
 (when (string-equal system-type "gnu/linux")
-  nil)
+  (toggle-frame-fullscreen))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
