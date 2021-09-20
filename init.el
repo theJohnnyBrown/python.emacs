@@ -166,7 +166,14 @@
  '(package-selected-packages
    '(hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pig-mode pbcopy paredit multiple-cursors markdown-mode magit fuzzy expand-region ein coffee-mode ac-nrepl ac-cider))
  '(safe-local-variable-values
-   '((cider-ns-refresh-after-fn . "integrant.repl/resume")
+   '((cljr-suppress-no-project-warning . t)
+     (cider-ns-refresh-after-fn . "system/override")
+     (cider-ns-save-files-on-refresh . t)
+     (cider-known-endpoints
+      ("localhost" "7888"))
+     (cider-clojure-cli-global-options "-A:shadow")
+     (cider-shadow-watched-builds "app" "cards")
+     (cider-ns-refresh-after-fn . "integrant.repl/resume")
      (cider-ns-refresh-before-fn . "integrant.repl/suspend")
      (cider-cljs-lein-repl . "(do (dev) (go) (cljs-repl))")
      (cider-refresh-after-fn . "reloaded.repl/resume")
@@ -247,3 +254,30 @@
 
 (setq cider-repl-display-in-current-window t)
 (setq inf-clojure-repl-use-same-window t)
+
+;; auto reload .dir-locals.el
+(add-hook 'emacs-lisp-mode-hook
+          (defun enable-autoreload-for-dir-locals ()
+            (when (and (buffer-file-name)
+                       (equal dir-locals-file
+                              (file-name-nondirectory (buffer-file-name))))
+              (add-hook (make-variable-buffer-local 'after-save-hook)
+                        'my-reload-dir-locals-for-all-buffer-in-this-directory))))
+
+(defadvice split-window-horizontally (after rebalance-windows activate)
+  (balance-windows))
+(ad-activate 'split-window-horizontally)
+
+(defadvice split-window-vertically (after rebalance-windows activate)
+  (balance-windows))
+(ad-activate 'split-window-vertically)
+
+(add-to-list 'auto-mode-alist '("\\.bazel\\'" . python-mode))
+(add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
+
+
+
+
+
+
+
