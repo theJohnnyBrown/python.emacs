@@ -1,11 +1,11 @@
 ;; vendored code outside of package archives
 (setq byte-compile-warnings '(not obsolete))
-(load "~/.emacs.d/nxhtml/autostart.el")
+;; (load "~/.emacs.d/nxhtml/autostart.el")
 
 ;; built-in packages
 (require 'uniquify)
 
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")))
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")))
 (require 'cl)
 
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
@@ -26,10 +26,10 @@
   (require 'package)
   (add-to-list 'package-archives
 	       '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+  ;; (add-to-list 'package-archives
+  ;; 	       '("marmalade" . "https://marmalade-repo.org/packages/"))
   (add-to-list 'package-archives
-	       '("marmalade" . "http://marmalade-repo.org/packages/"))
-  (add-to-list 'package-archives
-	       (cons "melpa"  "http://melpa.org/packages/") t)
+	       (cons "melpa"  "https://melpa.org/packages/") t)
   (package-initialize))
 
 (defun my-packages-installed-p ()
@@ -51,6 +51,11 @@
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :config (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+
+(use-package html-to-hiccup
+  :ensure t
+  ;; (define-key clojure-mode-map (kbd "H-h") 'html-to-hiccup-convert-region)
+  )
 
 (add-hook 'org-shiftup-final-hook 'windmove-up)
 (add-hook 'org-shiftleft-final-hook 'windmove-left)
@@ -197,6 +202,7 @@
 
 (setq uniquify-buffer-name-style 'post-forward)
 (windmove-default-keybindings)
+(global-set-key (kbd "C-x C-r") 'rename-buffer)
 
 (setq ring-bell-function 'ignore)
 
