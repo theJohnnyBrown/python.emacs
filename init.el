@@ -16,7 +16,7 @@
 (defvar my-packages
   '(expand-region pbcopy ein xclip verb
     magit markdown-mode paredit python cider csharp-mode go-mode csv-mode
-    rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors
+    rainbow-mode tangotango-theme dracula-theme popup fuzzy pos-tip smartrep multiple-cursors
     ;; clojure stuff:
     ;; http://fgiasson.com/blog/index.php/2014/05/22/my-optimal-gnu-emacs-settings-for-developing-clojure-so-far/
     clojure-mode auto-complete ac-cider paredit popup
@@ -104,7 +104,8 @@
 ;; =====================================================
 
 
-(load-theme 'tangotango t)
+;; (load-theme 'tangotango t)
+(load-theme 'dracula t)
 (setq inhibit-splash-screen t)
 
 (when (eq window-system 'x)
@@ -155,35 +156,13 @@
 ;;; end zeroein.el
 
 ;; personal idiosyncracies
+(setq cider-test-show-report-on-success t)
 (setq-default indent-tabs-mode nil)
 (setq js-indent-level 2)
 (set-default 'truncate-lines t)
 (setq-default fill-column 80)
 (set-default 'require-final-newline t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(column-number-mode t)
- '(global-linum-mode t)
- '(package-selected-packages
-   '(hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pig-mode pbcopy paredit multiple-cursors markdown-mode magit fuzzy expand-region ein coffee-mode ac-nrepl ac-cider))
- '(safe-local-variable-values
-   '((cljr-suppress-no-project-warning . t)
-     (cider-ns-refresh-after-fn . "system/override")
-     (cider-ns-save-files-on-refresh . t)
-     (cider-known-endpoints
-      ("localhost" "7888"))
-     (cider-clojure-cli-global-options "-A:shadow")
-     (cider-shadow-watched-builds "app" "cards")
-     (cider-ns-refresh-after-fn . "integrant.repl/resume")
-     (cider-ns-refresh-before-fn . "integrant.repl/suspend")
-     (cider-cljs-lein-repl . "(do (dev) (go) (cljs-repl))")
-     (cider-refresh-after-fn . "reloaded.repl/resume")
-     (cider-refresh-before-fn . "reloaded.repl/suspend")))
- '(show-paren-mode t))
 
 (global-set-key "\C-xe" 'mc/edit-lines)
 
@@ -280,10 +259,3 @@
 
 (add-to-list 'auto-mode-alist '("\\.bazel\\'" . python-mode))
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
-
-
-
-
-
-
-
