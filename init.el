@@ -1,11 +1,11 @@
 ;; vendored code outside of package archives
 (setq byte-compile-warnings '(not obsolete))
 ;; (load "~/.emacs.d/nxhtml/autostart.el")
+(defvar native-comp-deferred-compilation-deny-list nil)
+(setq package-enable-at-startup nil)
 
 ;; built-in packages
 (require 'uniquify)
-
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")))
 (require 'cl)
 
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
@@ -17,45 +17,32 @@
   '(expand-region pbcopy ein xclip verb
     magit markdown-mode paredit python cider csharp-mode go-mode csv-mode
     rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors
+    solidity-mode yaml-mode
     ;; clojure stuff:
     ;; http://fgiasson.com/blog/index.php/2014/05/22/my-optimal-gnu-emacs-settings-for-developing-clojure-so-far/
     clojure-mode auto-complete ac-cider paredit popup
     rainbow-delimiters inf-clojure use-package vterm))
 
-(when (>= emacs-major-version 24)
-  (require 'package)
-  (add-to-list 'package-archives
-	       '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-  ;; (add-to-list 'package-archives
-  ;; 	       '("marmalade" . "https://marmalade-repo.org/packages/"))
-  (add-to-list 'package-archives
-	       (cons "melpa"  "https://melpa.org/packages/") t)
-  (package-initialize))
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(defun my-packages-installed-p ()
-  (loop for p in my-packages
-        when (not (package-installed-p p)) do (return nil)
-        finally (return t)))
+(dolist (p my-packages)
+    (straight-use-package p))
 
-(unless (my-packages-installed-p)
-  ;; check for new packages (package versions)
-  (package-refresh-contents)
-  ;; install the missing packages
-  (dolist (p my-packages)
-    (when (not (package-installed-p p))
-      (package-install p))))
+(straight-use-package 'solidity-mode)
 
-(use-package vterm
+(straight-use-package 'vterm
     :ensure t)
-
-(use-package org
-  :mode ("\\.org\\'" . org-mode)
-  :config (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
-
-(use-package html-to-hiccup
-  :ensure t
-  ;; (define-key clojure-mode-map (kbd "H-h") 'html-to-hiccup-convert-region)
-  )
 
 (add-hook 'org-shiftup-final-hook 'windmove-up)
 (add-hook 'org-shiftleft-final-hook 'windmove-left)
@@ -169,7 +156,7 @@
  '(column-number-mode t)
  '(global-linum-mode t)
  '(package-selected-packages
-   '(hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pig-mode pbcopy paredit multiple-cursors markdown-mode magit fuzzy expand-region ein coffee-mode ac-nrepl ac-cider))
+   '(solidity-mode hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pig-mode pbcopy paredit multiple-cursors markdown-mode magit fuzzy expand-region ein coffee-mode ac-nrepl ac-cider))
  '(safe-local-variable-values
    '((cljr-suppress-no-project-warning . t)
      (cider-ns-refresh-after-fn . "system/override")
@@ -281,6 +268,7 @@
 (add-to-list 'auto-mode-alist '("\\.bazel\\'" . python-mode))
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
 
+(setq cider-clojure-cli-global-options "-A:dev")
 
 
 
