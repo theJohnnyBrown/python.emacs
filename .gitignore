@@ -3,3 +3,5 @@ elpa
 auto-save-list
 *~
 ac-comphist.dat
+locals.el
+straight/

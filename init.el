@@ -14,7 +14,7 @@
 
 
 (defvar my-packages
-  '(expand-region pbcopy ein xclip verb
+  '(expand-region pbcopy ein xclip verb typescript-mode
     magit markdown-mode paredit python cider csharp-mode go-mode csv-mode
     rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors
     solidity-mode yaml-mode
@@ -269,3 +269,6 @@
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
 
 (setq cider-clojure-cli-global-options "-A:dev")
+
+(add-to-list 'load-path "~/.emacs.d/")
+(load "locals.el")
