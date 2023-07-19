@@ -14,7 +14,7 @@
 
 
 (defvar my-packages
-  '(expand-region pbcopy ein xclip verb
+  '(expand-region pbcopy ein xclip verb typescript-mode
     magit markdown-mode paredit python cider csharp-mode go-mode csv-mode
     rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors
     solidity-mode yaml-mode
@@ -270,8 +270,34 @@
 
 (setq cider-clojure-cli-global-options "-A:dev")
 
+(add-to-list 'load-path "~/.emacs.d/locals/")
 
+(defun load-if-exists (filename)
+  "Load the elisp file FILENAME if it exists on `load-path'."
+  (let ((filepath (locate-library filename)))
+    (when filepath
+      (load filepath))))
 
+(load-if-exists "locals.el")
 
+(defun spit-append (filename data)
+  "Appends DATA to FILENAME."
+  (with-temp-buffer
+    (insert data)
+    (write-region (point-min) (point-max) filename t)))
 
+(defun spit (filename data)
+  "Writes DATA to FILENAME."
+  (with-temp-buffer
+    (insert data)
+    (write-region (point-min) (point-max) filename)))
 
+(defun append-utils-shell-config (shell-config-file)
+  (spit-append shell-config-file
+               (string-join '("\nsource \"$HOME/.emacs.d/vterm.sh\""
+                              "alias gs='git status' "
+                              "alias gd='git diff'"
+                              "alias ga='git add'")
+                            "\n")))
+
+; (append-utils-shell-config "~/.zshrc")
