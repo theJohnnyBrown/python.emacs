@@ -14,7 +14,6 @@
 
 
 (defvar my-packages
-  '(expand-region pbcopy ein xclip verb typescript-mode
   '(expand-region pbcopy ein xclip verb php-mode typescript-mode
     magit markdown-mode paredit python cider csharp-mode go-mode csv-mode
     rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors
