@@ -1,4 +1,31 @@
 ;; vendored code outside of package archives
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(custom-safe-themes
+   '("603a831e0f2e466480cdc633ba37a0b1ae3c3e9a4e90183833bc4def3421a961" default))
+ '(global-linum-mode t)
+ '(package-selected-packages
+   '(solidity-mode hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pbcopy paredit multiple-cursors markdown-mode fuzzy expand-region company))
+ '(safe-local-variable-values
+   '((cljr-suppress-no-project-warning . t)
+     (cider-ns-refresh-after-fn . "system/override")
+     (cider-ns-save-files-on-refresh . t)
+     (cider-known-endpoints
+      ("localhost" "7888"))
+     (cider-clojure-cli-global-options "-A:shadow")
+     (cider-shadow-watched-builds "app" "cards")
+     (cider-ns-refresh-after-fn . "integrant.repl/resume")
+     (cider-ns-refresh-before-fn . "integrant.repl/suspend")
+     (cider-cljs-lein-repl . "(do (dev) (go) (cljs-repl))")
+     (cider-refresh-after-fn . "reloaded.repl/resume")
+     (cider-refresh-before-fn . "reloaded.repl/suspend")))
+ '(show-paren-mode t)
+ '(typescript-indent-level 2))
+
 (setq byte-compile-warnings '(not obsolete))
 ;; (load "~/.emacs.d/nxhtml/autostart.el")
 (defvar native-comp-deferred-compilation-deny-list nil)
@@ -14,13 +41,13 @@
 
 
 (defvar my-packages
-  '(expand-region pbcopy ein xclip verb php-mode typescript-mode
-    magit markdown-mode paredit python cider csharp-mode go-mode csv-mode
-    rainbow-mode tangotango-theme popup fuzzy pos-tip smartrep multiple-cursors
-    solidity-mode yaml-mode
+  '(expand-region pbcopy xclip verb typescript-mode company
+    markdown-mode paredit python cider csharp-mode go-mode csv-mode
+    rainbow-mode popup fuzzy pos-tip smartrep multiple-cursors rust-mode
+    solidity-mode yaml-mode dracula-theme hc-zenburn-theme spacemacs-theme
     ;; clojure stuff:
     ;; http://fgiasson.com/blog/index.php/2014/05/22/my-optimal-gnu-emacs-settings-for-developing-clojure-so-far/
-    clojure-mode auto-complete ac-cider paredit popup
+    clojure-mode paredit popup
     rainbow-delimiters inf-clojure use-package vterm))
 
 (defvar bootstrap-version)
@@ -39,6 +66,8 @@
 (dolist (p my-packages)
     (straight-use-package p))
 
+;; (straight-use-package 'spacemacs-theme)
+
 (straight-use-package 'solidity-mode)
 
 (straight-use-package 'vterm
@@ -53,24 +82,13 @@
 ;; =============== clojure config ======================
 (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
 
-;; General Auto-Complete
-(require 'auto-complete-config)
-(setq ac-delay 0.0)
-(setq ac-quick-help-delay 0.5)
-(ac-config-default)
-
-(require 'ac-cider)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(add-hook 'cider-mode-hook 'ac-cider-setup)
-(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(progn
-     (add-to-list 'ac-modes 'cider-mode)
-     (add-to-list 'ac-modes 'cider-repl-mode)))
-
 (add-hook 'clojure-mode-hook 'paredit-mode)
+(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 
 (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -91,7 +109,8 @@
 ;; =====================================================
 
 
-(load-theme 'tangotango t)
+(load-theme 'spacemacs-dark t)
+
 (setq inhibit-splash-screen t)
 
 (when (eq window-system 'x)
@@ -102,25 +121,6 @@
 (when (eq window-system 'ns)
   (require 'pbcopy)
   (turn-on-pbcopy))
-
-;; copied from zeroein.el
-
-(eval-when-compile (require 'ein-notebooklist))
-(require 'ein)
-
-;; (defvar zeroein:root-dir "~/.emacs.d/elpa/ein-20130710.2114/")
-;; (defun zeroein:path (p &rest ps)
-;;   (if ps
-;;       (apply #'zeroein:path
-;;            (concat (file-name-as-directory p) (car ps)) (cdr ps))
-;;     (concat zeroein:root-dir p)))
-;; (setq ein:use-auto-complete-superpack t)
-
-(require 'auto-complete-config nil t)
-;; (declare-function global-auto-complete-mode "auto-complete.el")
-(when (featurep 'auto-complete-config)
-  (ac-config-default)
-  (global-auto-complete-mode t))
 
 ;; MuMaMo
 
@@ -148,29 +148,6 @@
 (setq-default fill-column 80)
 (set-default 'require-final-newline t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(column-number-mode t)
- '(global-linum-mode t)
- '(package-selected-packages
-   '(solidity-mode hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pig-mode pbcopy paredit multiple-cursors markdown-mode magit fuzzy expand-region ein coffee-mode ac-nrepl ac-cider))
- '(safe-local-variable-values
-   '((cljr-suppress-no-project-warning . t)
-     (cider-ns-refresh-after-fn . "system/override")
-     (cider-ns-save-files-on-refresh . t)
-     (cider-known-endpoints
-      ("localhost" "7888"))
-     (cider-clojure-cli-global-options "-A:shadow")
-     (cider-shadow-watched-builds "app" "cards")
-     (cider-ns-refresh-after-fn . "integrant.repl/resume")
-     (cider-ns-refresh-before-fn . "integrant.repl/suspend")
-     (cider-cljs-lein-repl . "(do (dev) (go) (cljs-repl))")
-     (cider-refresh-after-fn . "reloaded.repl/resume")
-     (cider-refresh-before-fn . "reloaded.repl/suspend")))
- '(show-paren-mode t))
 
 (global-set-key "\C-xe" 'mc/edit-lines)
 
@@ -186,6 +163,10 @@
 (setq auto-save-file-name-transforms
       `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
          ,(expand-file-name "\\2" temporary-file-directory) t)))
+
+;; lockfiles annoy the compiler watch sometimes
+(setq create-lockfiles nil)
+
 
 (setq uniquify-buffer-name-style 'post-forward)
 (windmove-default-keybindings)
@@ -226,9 +207,13 @@
 
 (electric-pair-mode +1)
 
-(set-face-attribute 'default nil :family "Monaco" :height 100 :weight 'normal)
-;; (set-face-attribute 'default nil :family "Monaco" :height 120 :weight 'normal)
-;;
+(defun font-size ()
+  (interactive)
+  (set-face-attribute 'default nil :family "Monaco" :height 100 :weight 'normal))
+
+(defun font-size-present ()
+  (interactive)
+  (set-face-attribute 'default nil :family "Monaco" :height 125 :weight 'normal))
 
 (when (string-equal system-type "darwin")
   (set-frame-parameter nil 'fullscreen 'fullboth)
@@ -278,7 +263,9 @@
     (when filepath
       (load filepath))))
 
-(load-if-exists "locals.el")
+
+(load-if-exists "locals-looplegendz.el")
+;; (load-if-exists "locals-sunchat.el")
 
 (defun spit-append (filename data)
   "Appends DATA to FILENAME."
@@ -294,10 +281,16 @@
 
 (defun append-utils-shell-config (shell-config-file)
   (spit-append shell-config-file
-               (string-join '("\nsource \"$HOME/.emacs.d/vterm.sh\""
+               (string-join '("# inserted by init.el"
+                              "\nsource \"$HOME/.emacs.d/vterm.sh\""
                               "alias gs='git status' "
                               "alias gd='git diff'"
-                              "alias ga='git add'")
+                              "alias ga='git add'"
+                              "rgg() { rg --color=always \"$1\" | less -S }"
+                              "# end init.el inserts")
                             "\n")))
 
-; (append-utils-shell-config "~/.zshrc")
+;; (append-utils-shell-config "~/.zshrc")
+
+(add-hook 'vterm-mode-hook #'goto-address-mode)
+(setq browse-url-browser-function 'browse-url-default-browser)
