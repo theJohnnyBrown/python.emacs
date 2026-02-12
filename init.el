@@ -1,3 +1,4 @@
+(require 'uniquify)
 ;; vendored code outside of package archives
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -5,11 +6,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
- '(custom-safe-themes
-   '("603a831e0f2e466480cdc633ba37a0b1ae3c3e9a4e90183833bc4def3421a961" default))
  '(global-linum-mode t)
- '(package-selected-packages
-   '(solidity-mode hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pbcopy paredit multiple-cursors markdown-mode fuzzy expand-region company))
+ ;; '(package-selected-packages
+ ;;   '(solidity-mode hcl-mode verb vterm-toggle vterm use-package typescript-mode cider rjsx-mode csharp-mode yaml-mode xclip tangotango-theme smartrep scala-mode rainbow-mode rainbow-delimiters python pos-tip pbcopy paredit multiple-cursors markdown-mode fuzzy expand-region company))
  '(safe-local-variable-values
    '((cljr-suppress-no-project-warning . t)
      (cider-ns-refresh-after-fn . "system/override")
@@ -26,30 +25,21 @@
  '(show-paren-mode t)
  '(typescript-indent-level 2))
 
-(setq byte-compile-warnings '(not obsolete))
-;; (load "~/.emacs.d/nxhtml/autostart.el")
-(defvar native-comp-deferred-compilation-deny-list nil)
-(setq package-enable-at-startup nil)
-
-;; built-in packages
-(require 'uniquify)
-(require 'cl)
-
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
-(add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path (concat (getenv "HOME") "/bin"))
+;; (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+;; (add-to-list 'exec-path "/usr/local/bin")
+;; (add-to-list 'exec-path (concat (getenv "HOME") "/bin"))
 
 
 (defvar my-packages
-  '(expand-region pbcopy xclip verb typescript-mode company
-    markdown-mode paredit python cider csharp-mode go-mode csv-mode
-    rainbow-mode popup fuzzy pos-tip smartrep multiple-cursors rust-mode
-    solidity-mode yaml-mode dracula-theme hc-zenburn-theme spacemacs-theme
+  '(pbcopy xclip typescript-mode vterm zenburn-theme cyberpunk-theme
+    markdown-mode paredit python cider go-mode csv-mode
+    multiple-cursors rust-mode
+    solidity-mode yaml-mode
     ;; clojure stuff:
     ;; http://fgiasson.com/blog/index.php/2014/05/22/my-optimal-gnu-emacs-settings-for-developing-clojure-so-far/
-    clojure-mode paredit popup
-    rainbow-delimiters inf-clojure use-package vterm))
+    clojure-mode popup rainbow-delimiters inf-clojure))
 
+;; download and install straight-use-package
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -63,56 +53,31 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; install packages
 (dolist (p my-packages)
     (straight-use-package p))
 
-;; (straight-use-package 'spacemacs-theme)
+;; configure certain packages
+(use-package vterm
+  :config
+  (add-hook 'vterm-mode-hook #'goto-address-mode)
+  (setq browse-url-browser-function 'browse-url-default-browser)
+  (define-key vterm-mode-map (kbd "C-c o") #'find-file-at-point)
+  (define-key vterm-copy-mode-map (kbd "C-c o") #'find-file-at-point))
 
-(straight-use-package 'solidity-mode)
+(use-package vterm
+  :straight (vterm :type git :host github :repo "akermu/emacs-libvterm")
+  :config
+  (add-hook 'vterm-mode-hook #'goto-address-mode)
+  (setq browse-url-browser-function 'browse-url-default-browser)
+  (define-key vterm-mode-map (kbd "C-c o") #'find-file-at-point)
+  (define-key vterm-copy-mode-map (kbd "C-c o") #'find-file-at-point))
 
-(straight-use-package 'vterm
-    :ensure t)
+(use-package cyberpunk-theme
+  :config
+  (load-theme 'cyberpunk t))
 
-(add-hook 'org-shiftup-final-hook 'windmove-up)
-(add-hook 'org-shiftleft-final-hook 'windmove-left)
-(add-hook 'org-shiftdown-final-hook 'windmove-down)
-(add-hook 'org-shiftright-final-hook 'windmove-right)
-
-
-;; =============== clojure config ======================
-(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
-
-(add-hook 'clojure-mode-hook 'paredit-mode)
-(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
-
-(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
-
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(font-lock-string-face ((t (:foreground "#ad7fa8" :slant normal))))
- '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil)))
- '(rainbow-delimiters-depth-1-face ((t (:foreground "#eeeeec"))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "#fce94f"))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "#8ae234"))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "#fcaf3e"))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "#ad7fa8"))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "#729fcf"))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "#e9b96e"))))
- '(rainbow-delimiters-depth-8-face ((t (:foreground "#ef2929")))))
-
-(setq nrepl-popup-stacktraces nil) ;; provisional
-;; =====================================================
-
-
-(load-theme 'spacemacs-dark t)
-
-(setq inhibit-splash-screen t)
-
+;; ================ copy/paste from/to emacs
 (when (eq window-system 'x)
   (xclip-mode 1)
   (setq x-select-enable-clipboard t)
@@ -121,58 +86,6 @@
 (when (eq window-system 'ns)
   (require 'pbcopy)
   (turn-on-pbcopy))
-
-;; MuMaMo
-
-
-;;; Workaround
-
-;; Suppress this warning when using mumamo:
-;; Warning: `font-lock-syntactic-keywords' is an obsolete variable (as of 24.1);
-;;     use `syntax-propertize-function' instead.
-(when (and (equal emacs-major-version 24)
-           (equal emacs-minor-version 1))
-  (eval-after-load "bytecomp"
-    '(add-to-list 'byte-compile-not-obsolete-vars
-                  'font-lock-syntactic-keywords)))
-;; See: http://stackoverflow.com/a/5470584/727827
-(setq ein:notebook-modes
-      '(ein:notebook-mumamo-mode ein:notebook-plain-mode))
-
-;;; end zeroein.el
-
-;; personal idiosyncracies
-(setq-default indent-tabs-mode nil)
-(setq js-indent-level 2)
-(set-default 'truncate-lines t)
-(setq-default fill-column 80)
-(set-default 'require-final-newline t)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-(global-set-key "\C-xe" 'mc/edit-lines)
-
-;; Changes all yes/no questions to y/n type
-(fset 'yes-or-no-p 'y-or-n-p)
-;; Scroll down with the cursor,move down the buffer one
-;; line at a time, instead of in larger amounts.
-(setq scroll-step 1)
-
-;; backup files (doesn't work)
-(setq backup-directory-alist
-      `(("." . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-         ,(expand-file-name "\\2" temporary-file-directory) t)))
-
-;; lockfiles annoy the compiler watch sometimes
-(setq create-lockfiles nil)
-
-
-(setq uniquify-buffer-name-style 'post-forward)
-(windmove-default-keybindings)
-(global-set-key (kbd "C-x C-r") 'rename-buffer)
-
-(setq ring-bell-function 'ignore)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Surround word or region with html tags
@@ -191,56 +104,84 @@
 
 (global-set-key "\C-xt" 'tag-word-or-region)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DEBUG STATEMENTS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-hook 'python-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "C-c d")
-			   (lambda () (interactive)
-			     (insert "import ipdb;ipdb.set_trace()")))))
 
-(add-hook 'js-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "C-c d") (lambda () (interactive)
-					   (insert "debugger;")))))
 
+;; =============== clojure config ======================
+(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+
+(add-hook 'clojure-mode-hook 'paredit-mode)
+(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+
+(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+
+
+;; lisp theming
+;; --------------------------------------------------------
+(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(font-lock-string-face ((t (:foreground "#ad7fa8" :slant normal))))
+ '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil)))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#eeeeec"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#fce94f"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "#8ae234"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "#fcaf3e"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "#ad7fa8"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#729fcf"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "#e9b96e"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "#ef2929")))))
+;; -----------------------------------------------------------------
+
+;; ================== general config =========================
 (electric-pair-mode +1)
+(setq inhibit-splash-screen t)
+(setq-default indent-tabs-mode nil)
+(setq js-indent-level 2)
+(set-default 'truncate-lines t)
+(setq-default fill-column 80)
+(set-default 'require-final-newline t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(setq uniquify-buffer-name-style 'post-forward)
+(setq ring-bell-function 'ignore)
+(setq create-lockfiles nil)
+(tool-bar-mode 0)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
 
 (defun font-size ()
   (interactive)
-  (set-face-attribute 'default nil :family "Monaco" :height 100 :weight 'normal))
+  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 125 :weight 'normal))
 
-(defun font-size-present ()
+
+(defun font-size-smaller ()
   (interactive)
-  (set-face-attribute 'default nil :family "Monaco" :height 125 :weight 'normal))
+  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 90 :weight 'normal))
 
-(when (string-equal system-type "darwin")
-  (set-frame-parameter nil 'fullscreen 'fullboth)
-  (setq mac-command-modifier 'meta))
+(defun font-size-larger ()
+  (interactive)
+  (set-face-attribute 'default nil :family "DejaVu Sans Mono"  :height 150 :weight 'normal))
+
+;; (font-size)
+ (font-size-smaller)
+;; (font-size-larger)
+
+;; (when (string-equal system-type "darwin")
+;;   (set-frame-parameter nil 'fullscreen 'fullboth)
+;;   (setq mac-command-modifier 'meta))
 
 (when (string-equal system-type "gnu/linux")
   (toggle-frame-fullscreen))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
 (setq cider-repl-display-in-current-window t)
 (setq inf-clojure-repl-use-same-window t)
-
-;; auto reload .dir-locals.el
-(add-hook 'emacs-lisp-mode-hook
-          (defun enable-autoreload-for-dir-locals ()
-            (when (and (buffer-file-name)
-                       (equal dir-locals-file
-                              (file-name-nondirectory (buffer-file-name))))
-              (add-hook (make-variable-buffer-local 'after-save-hook)
-                        'my-reload-dir-locals-for-all-buffer-in-this-directory))))
 
 (defadvice split-window-horizontally (after rebalance-windows activate)
   (balance-windows))
@@ -255,18 +196,18 @@
 
 (setq cider-clojure-cli-global-options "-A:dev")
 
-(add-to-list 'load-path "~/.emacs.d/locals/")
+(global-auto-revert-mode 1)
+(setq auto-revert-verbose nil)
+(setq auto-revert-interval 1)
 
-(defun load-if-exists (filename)
-  "Load the elisp file FILENAME if it exists on `load-path'."
-  (let ((filepath (locate-library filename)))
-    (when filepath
-      (load filepath))))
+;; Changes all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+;; Scroll down with the cursor,move down the buffer one
+;; line at a time, instead of in larger amounts.
+(setq scroll-step 1)
+;; ======================= end general config ========================
 
-
-(load-if-exists "locals-looplegendz.el")
-;; (load-if-exists "locals-sunchat.el")
-
+;; =============== vterm shell setup and aliases ===================
 (defun spit-append (filename data)
   "Appends DATA to FILENAME."
   (with-temp-buffer
@@ -286,11 +227,29 @@
                               "alias gs='git status' "
                               "alias gd='git diff'"
                               "alias ga='git add'"
-                              "rgg() { rg --color=always \"$1\" | less -S }"
                               "# end init.el inserts")
                             "\n")))
 
+;; uncomment this and eval it once when setting up
 ;; (append-utils-shell-config "~/.zshrc")
 
-(add-hook 'vterm-mode-hook #'goto-address-mode)
-(setq browse-url-browser-function 'browse-url-default-browser)
+
+;; ================= local config files (good place for secret env vars) ================
+(add-to-list 'load-path "~/.emacs.d/locals/")
+(defun load-if-exists (filename)
+  "Load the elisp file FILENAME if it exists on `load-path'."
+  (let ((filepath (locate-library filename)))
+    (when filepath
+      (load filepath))))
+(load-if-exists "locals-jb.el")
+
+
+
+;; ============ shortcuts =================
+(global-set-key "\C-xe" 'mc/edit-lines)
+(global-set-key (kbd "C-x C-r") 'rename-buffer)
+(windmove-default-keybindings)
+(add-hook 'org-shiftup-final-hook 'windmove-up)
+(add-hook 'org-shiftleft-final-hook 'windmove-left)
+(add-hook 'org-shiftdown-final-hook 'windmove-down)
+(add-hook 'org-shiftright-final-hook 'windmove-right)
